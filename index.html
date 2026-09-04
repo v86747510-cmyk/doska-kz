@@ -11,8 +11,8 @@
  input { padding: 12px; border-radius: 5px; border: 1px solid #ccc; width: 68%; }
  button { padding: 12px; background: #1976d2; color: white; cursor: pointer; border: none; border-radius: 5px; width: 28%; }
  button:hover { background: #1565c0; }
- .note { background: #fff9c4; padding: 12px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
- .note button { width: 35px; background: #f44336; padding: 5px; }
+ .note { background: #fff9c4; padding: 12px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; }
+ .note button { width: 35px; background: #f44336; }
 </style>
 </head>
 <body>
@@ -25,22 +25,16 @@
 
 <script>
 let notes = [];
-
 function loadNotes() {
   const saved = localStorage.getItem('myNotes');
-  if (saved) {
-    notes = JSON.parse(saved);
-    notes.forEach(text => createNoteDiv(text));
-  }
+  if (saved) { notes = JSON.parse(saved); notes.forEach(text => createNoteDiv(text)); }
 }
-
 function createNoteDiv(text) {
   let noteDiv = document.createElement("div");
   noteDiv.className = "note";
   noteDiv.innerHTML = `<span>${text}</span> <button onclick="deleteNote(this)">X</button>`;
   document.getElementById("notes").appendChild(noteDiv);
 }
-
 function addNote() {
   let input = document.getElementById("noteInput");
   let noteText = input.value.trim();
@@ -50,14 +44,12 @@ function addNote() {
   createNoteDiv(noteText);
   input.value = "";
 }
-
 function deleteNote(btn) {
   let text = btn.parentElement.querySelector('span').innerText;
   btn.parentElement.remove();
   notes = notes.filter(n => n !== text);
   localStorage.setItem('myNotes', JSON.stringify(notes));
 }
-
 loadNotes();
 </script>
 </body>
