@@ -1,56 +1,64 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Доска</title>
-<style>
- body { font-family: Arial; background: #e3f2fd; padding: 20px; }
- h1 { color: #1976d2; text-align: center; }
- .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
- input { padding: 12px; border-radius: 5px; border: 1px solid #ccc; width: 68%; }
- button { padding: 12px; background: #1976d2; color: white; cursor: pointer; border: none; border-radius: 5px; width: 28%; }
- button:hover { background: #1565c0; }
- .note { background: #fff9c4; padding: 12px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; }
- .note button { width: 35px; background: #f44336; }
-</style>
+  <meta charset="UTF-8">
+  <title>Доска: ТОЛЬКО КУПЛЮ</title>
+  <style>
+    body { font-family: Arial; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    h1 { text-align: center; color: #ff5722; }
+    input, textarea, button { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+    button { background: #ff5722; color: white; border: none; cursor: pointer; font-weight: bold; }
+    .ad { background: #fff3e0; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ff5722; }
+    .ad b { color: #e65100; }
+  </style>
 </head>
 <body>
-<div class="container">
- <h1>📌 Моя Доска</h1>
- <input type="text" id="noteInput" placeholder="Напиши заметку...">
- <button onclick="addNote()">Добавить</button>
- <div id="notes"></div>
-</div>
+  <div class="container">
+    <h1>📢 Доска: ТОЛЬКО КУПЛЮ</h1>
+    
+    <h3>Добавить объявление</h3>
+    <input id="what" placeholder="Что куплю? Например: iPhone 13">
+    <input id="price" placeholder="Цена до: 300000 тг">
+    <input id="contact" placeholder="Контакты: WhatsApp / Телефон">
+    <button onclick="addAd()">Опубликовать</button>
+
+    <h3>Объявления</h3>
+    <div id="ads"></div>
+  </div>
 
 <script>
-let notes = [];
-function loadNotes() {
-  const saved = localStorage.getItem('myNotes');
-  if (saved) { notes = JSON.parse(saved); notes.forEach(text => createNoteDiv(text)); }
+// Пока объявления сохраняются только у тебя
+let ads = JSON.parse(localStorage.getItem('ads')) || [];
+
+function addAd() {
+  let what = document.getElementById('what').value;
+  let price = document.getElementById('price').value;
+  let contact = document.getElementById('contact').value;
+  
+  if(!what || !price || !contact) return alert('Заполни все поля!');
+  
+  ads.unshift({what, price, contact, date: new Date().toLocaleDateString()});
+  localStorage.setItem('ads', JSON.stringify(ads));
+  showAds();
+  
+  document.getElementById('what').value = '';
+  document.getElementById('price').value = '';
+  document.getElementById('contact').value = '';
 }
-function createNoteDiv(text) {
-  let noteDiv = document.createElement("div");
-  noteDiv.className = "note";
-  noteDiv.innerHTML = `<span>${text}</span> <button onclick="deleteNote(this)">X</button>`;
-  document.getElementById("notes").appendChild(noteDiv);
+
+function showAds() {
+  document.getElementById('ads').innerHTML = ads.map(ad => `
+    <div class="ad">
+      <b>Куплю:</b> ${ad.what}<br>
+      <b>Цена до:</b> ${ad.price}<br>
+      <b>Контакты:</b> ${ad.contact}<br>
+      <small>${ad.date}</small>
+    </div>
+  `).join('');
 }
-function addNote() {
-  let input = document.getElementById("noteInput");
-  let noteText = input.value.trim();
-  if (noteText === "") return;
-  notes.push(noteText);
-  localStorage.setItem('myNotes', JSON.stringify(notes));
-  createNoteDiv(noteText);
-  input.value = "";
-}
-function deleteNote(btn) {
-  let text = btn.parentElement.querySelector('span').innerText;
-  btn.parentElement.remove();
-  notes = notes.filter(n => n !== text);
-  localStorage.setItem('myNotes', JSON.stringify(notes));
-}
-loadNotes();
+
+showAds();
 </script>
 </body>
 </html>
