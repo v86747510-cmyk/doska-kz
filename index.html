@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,36 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Доска</title>
 <style>
-body { font-family: Arial; background: #f0f0f0; padding: 20px; }
-h1 { color: #333; text-align: center; }
-.container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ddd; }
-button { background: #4CAF50; color: white; cursor: pointer; }
-button:hover { background: #45a049; }
-.note { background: #fff9c4; padding: 10px; margin: 10px 0; border-radius: 5px; }
+ body { font-family: Arial; background: #e3f2fd; padding: 20px; }
+ h1 { color: #1976d2; text-align: center; }
+ .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+ input { padding: 12px; border-radius: 5px; border: 1px solid #ccc; width: 68%; }
+ button { padding: 12px; background: #1976d2; color: white; cursor: pointer; border: none; border-radius: 5px; width: 28%; }
+ button:hover { background: #1565c0; }
+ .note { background: #fff9c4; padding: 12px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+ .note button { width: 35px; background: #f44336; padding: 5px; }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>📝 Моя Доска</h1>
-<input type="text" id="noteInput" placeholder="Напиши заметку...">
-<button onclick="addNote()">Добавить</button>
-<div id="notes"></div>
+ <h1>📌 Моя Доска</h1>
+ <input type="text" id="noteInput" placeholder="Напиши заметку...">
+ <button onclick="addNote()">Добавить</button>
+ <div id="notes"></div>
 </div>
 
 <script>
-function addNote() {
-let input = document.getElementById("noteInput");
-let noteText = input.value;
-if (noteText === "") return;
+let notes = [];
 
-let noteDiv = document.createElement("div");
-noteDiv.className = "note";
-noteDiv.innerHTML = noteText + ' <button onclick="this.parentElement.remove()">X</button>';
-document.getElementById("notes").appendChild(noteDiv);
-
-input.value = "";
+function loadNotes() {
+  const saved = localStorage.getItem('myNotes');
+  if (saved) {
+    notes = JSON.parse(saved);
+    notes.forEach(text => createNoteDiv(text));
+  }
 }
+
+function createNoteDiv(text) {
+  let noteDiv = document.createElement("div");
+  noteDiv.className = "note";
+  noteDiv.innerHTML = `<span>${text}</span> <button onclick="deleteNote(this)">X</button>`;
+  document.getElementById("notes").appendChild(noteDiv);
+}
+
+function addNote() {
+  let input = document.getElementById("noteInput");
+  let noteText = input.value.trim();
+  if (noteText === "") return;
+  notes.push(noteText);
+  localStorage.setItem('myNotes', JSON.stringify(notes));
+  createNoteDiv(noteText);
+  input.value = "";
+}
+
+function deleteNote(btn) {
+  let text = btn.parentElement.querySelector('span').innerText;
+  btn.parentElement.remove();
+  notes = notes.filter(n => n !== text);
+  localStorage.setItem('myNotes', JSON.stringify(notes));
+}
+
+loadNotes();
 </script>
 </body>
 </html>
